@@ -3,8 +3,7 @@ import { NavLink } from "react-router-dom";
 function Navbar() {
   return (
     <nav className="w-full h-[90px] flex items-center justify-between px-12 bg-[#B7C68833]">
-      
-      {/* Logo */}
+
       <NavLink
         to="/"
         className="text-[38px] font-serif text-[#5b341f]"
@@ -12,10 +11,7 @@ function Navbar() {
         PovertyLens
       </NavLink>
 
-      {/* Navigation */}
       <div className="flex gap-4">
-
-        {/* Home */}
         <NavLink
           to="/"
           className={({ isActive }) =>
@@ -32,7 +28,6 @@ function Navbar() {
           Home
         </NavLink>
 
-        {/* Cara Penggunaan */}
         <NavLink
           to="/how-to-use"
           className={({ isActive }) =>
@@ -49,7 +44,6 @@ function Navbar() {
           Cara Penggunaan
         </NavLink>
 
-        {/* Tentang Kami */}
         <NavLink
           to="/about-us"
           className={({ isActive }) =>

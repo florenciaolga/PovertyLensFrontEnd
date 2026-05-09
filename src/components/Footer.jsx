@@ -4,9 +4,7 @@ import {
   FaFacebook,
   FaGlobe,
 } from "react-icons/fa";
-
 import { MdEmail } from "react-icons/md";
-
 import { Link } from "react-router-dom";
 
 function Footer() {

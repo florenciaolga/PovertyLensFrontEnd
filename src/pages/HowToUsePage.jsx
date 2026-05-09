@@ -17,7 +17,6 @@ export default function HowToUsePage() {
         <div
           className="mx-auto flex w-[80%] items-center justify-center rounded-2xl bg-[#E7E6C280] p-8 max-md:flex-col max-md:gap-6"
         >
-          {/* Step 1 */}
           <div className="flex-1 pt-8 text-center">
             <h3 className="mb-10 font-[Poppins] text-[1.4rem] font-semibold text-[#5b341f]">
               Langkah 1
@@ -32,10 +31,8 @@ export default function HowToUsePage() {
             <SlLocationPin className="mx-auto text-[3.3rem] text-[#5b341f] transition hover:animate-bounce hover:text-[#173c5c]" />
           </div>
 
-          {/* Divider */}
           <div className="h-[330px] w-[1px] bg-[#112244] max-md:h-[1px] max-md:w-[80%]"></div>
 
-          {/* Step 2 */}
           <div className="flex-1 pt-8 text-center">
             <h3 className="mb-10 font-[Poppins] text-[1.4rem] font-semibold text-[#5b341f]">
               Langkah 2
@@ -48,10 +45,8 @@ export default function HowToUsePage() {
             <HiOutlineDocumentSearch className="mx-auto text-[3.3rem] text-[#5b341f] transition hover:animate-bounce hover:text-[#173c5c]" />
           </div>
 
-          {/* Divider */}
           <div className="h-[330px] w-[1px] bg-[#112244] max-md:h-[1px] max-md:w-[80%]"></div>
 
-          {/* Step 3 */}
           <div className="flex-1 pt-8 text-center">
             <h3 className="mb-10 font-[Poppins] text-[1.4rem] font-semibold text-[#5b341f]">
               Langkah 3
