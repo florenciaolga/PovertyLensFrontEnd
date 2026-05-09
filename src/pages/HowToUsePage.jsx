@@ -9,25 +9,13 @@ export default function HowToUsePage() {
     <div className="flex min-h-screen flex-col bg-white">
       <Navbar />
 
-      <main className="mt-60 flex-1 px-5 pb-2">
+      <main className="mt-35 flex-1 px-5 pb-2">
         <h1 className="mb-10 text-center font-[Poppins] text-[1.8rem] font-semibold text-[#5b341f]">
           Cara Penggunaan
         </h1>
 
         <div
-          className="
-            mx-auto
-            flex
-            w-[80%]
-            items-center
-            justify-center
-            rounded-2xl
-            bg-[#E7E6C280]
-            p-8
-
-            max-md:flex-col
-            max-md:gap-6
-          "
+          className="mx-auto flex w-[80%] items-center justify-center rounded-2xl bg-[#E7E6C280] p-8 max-md:flex-col max-md:gap-6"
         >
           {/* Step 1 */}
           <div className="flex-1 pt-8 text-center">
