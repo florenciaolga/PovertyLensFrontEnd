@@ -1,108 +1,102 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/NavBar";
-import Footer from "../components/Footer";
 import MapView from "../components/MapView";
 import RegionDetail from "../components/RegionDetail";
 import Legend from "../components/Legend";
 import SearchBar from "../components/SearchBar";
-import { fetchMapData, searchRegion } from "../services/api";
+import { searchRegion } from "../services/api";
 
-function normalise(str) {
-  return (str || "").toUpperCase().trim();
-}
-
-const GEOJSON_TO_CSV = {
-  "ACEH": "ACEH", "DI ACEH": "ACEH",
-  "BANGKA BELITUNG": "KEP. BANGKA BELITUNG",
-  "BANGKA-BELITUNG": "KEP. BANGKA BELITUNG",
-  "KEPULAUAN BANGKA BELITUNG": "KEP. BANGKA BELITUNG",
-  "DAERAH ISTIMEWA YOGYAKARTA": "D I YOGYAKARTA",
-  "DI YOGYAKARTA": "D I YOGYAKARTA",
-  "YOGYAKARTA": "D I YOGYAKARTA",
-  "JAKARTA": "DKI JAKARTA", "JAKARTA RAYA": "DKI JAKARTA", "DKI JAKARTA": "DKI JAKARTA",
-  "KEPULAUAN RIAU": "KEPULAUAN RIAU",
-  "NUSA TENGGARA BARAT": "NUSA TENGGARA BARAT",
-  "NUSA TENGGARA TIMUR": "NUSA TENGGARA TIMUR",
-  "MALUKU UTARA": "MALUKU UTARA",
-  "KALIMANTAN BARAT": "KALIMANTAN BARAT",
-  "KALIMANTAN TENGAH": "KALIMANTAN TENGAH",
-  "KALIMANTAN SELATAN": "KALIMANTAN SELATAN",
-  "KALIMANTAN TIMUR": "KALIMANTAN TIMUR",
-  "KALIMANTAN UTARA": "KALIMANTAN UTARA",
-  "SULAWESI UTARA": "SULAWESI UTARA", "SULAWESI TENGAH": "SULAWESI TENGAH",
-  "SULAWESI SELATAN": "SULAWESI SELATAN", "SULAWESI TENGGARA": "SULAWESI TENGGARA",
-  "SULAWESI BARAT": "SULAWESI BARAT", "GORONTALO": "GORONTALO",
-  "PAPUA BARAT": "PAPUA BARAT", "PAPUA": "PAPUA",
-  "SUMATERA UTARA": "SUMATERA UTARA", "SUMATERA BARAT": "SUMATERA BARAT",
-  "SUMATERA SELATAN": "SUMATERA SELATAN",
-  "RIAU": "RIAU", "JAMBI": "JAMBI", "BENGKULU": "BENGKULU", "LAMPUNG": "LAMPUNG",
-  "BANTEN": "BANTEN", "JAWA BARAT": "JAWA BARAT", "JAWA TENGAH": "JAWA TENGAH",
-  "JAWA TIMUR": "JAWA TIMUR", "BALI": "BALI", "MALUKU": "MALUKU",
+// ── GeoJSON name → CSV province name (uppercase) ──────────────────────────────
+// GeoJSON pakai uppercase BPS, CSV juga uppercase → mostly direct match
+// Special cases saja yang perlu alias
+const GEO_ALIAS = {
+  "DI ACEH"                     : "ACEH",
+  "IRIAN JAYA"                  : "PAPUA",
+  "IRIAN JAYA BARAT"            : "PAPUA BARAT",
+  "IRIAN JAYA TIMUR"            : "PAPUA",
+  "IRIAN JAYA TENGAH"           : "PAPUA",
+  "DAERAH ISTIMEWA YOGYAKARTA"  : "D I YOGYAKARTA",
+  "DI YOGYAKARTA"               : "D I YOGYAKARTA",
+  "YOGYAKARTA"                  : "D I YOGYAKARTA",
+  "JAKARTA"                     : "DKI JAKARTA",
+  "JAKARTA RAYA"                : "DKI JAKARTA",
+  "BANGKA BELITUNG"             : "KEP. BANGKA BELITUNG",
+  "KEPULAUAN BANGKA BELITUNG"   : "KEP. BANGKA BELITUNG",
+  "PROBANTEN"                   : "BANTEN",
 };
 
-function resolveProvince(rawName) {
-  const up = normalise(rawName);
-  return GEOJSON_TO_CSV[up] || up;
+function resolveProvince(rawGeoName) {
+  const up = (rawGeoName || "").toUpperCase().trim();
+  return GEO_ALIAS[up] || up;
 }
 
+// ── Home ──────────────────────────────────────────────────────────────────────
 export default function Home() {
   const [geoData,        setGeoData]        = useState(null);
+  // provinceData: { "ACEH": { dominant: 0, kab_kota: [{kab_kota, cluster}] }, ... }
+  const [provinceData,   setProvinceData]   = useState({});
+  // clusterMap untuk MapView: { "ACEH": { dominant: 0 }, ... }
   const [clusterMap,     setClusterMap]     = useState({});
-  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [selectedRegion, setSelectedRegion] = useState(null); // nama provinsi (uppercase CSV)
 
-  //load GeoJSON provinsi Indonesia
+  // Load GeoJSON provinsi — pakai gadm yang akurat & up-to-date
   useEffect(() => {
     fetch(
-      "https://raw.githubusercontent.com/superpikar/indonesia-geojson/master/indonesia-province-simple.json"
-    )
+      "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson"
+    ).catch(() => {});
+
+    // Pakai provinsi GeoJSON dari eppofahmi yang punya nama BPS uppercase
+    fetch("https://raw.githubusercontent.com/eppofahmi/geojson-indonesia/master/provinsi/all_prov.geojson")
       .then((r) => r.json())
       .then(setGeoData)
-      .catch(console.error);
+      .catch(() => {
+        // Fallback: coba source lain
+        fetch("https://raw.githubusercontent.com/ans-4175/peta-indonesia-geojson/master/indonesia-prov.geojson")
+          .then(r => r.json())
+          .then(setGeoData)
+          .catch(console.error);
+      });
   }, []);
 
+  // Load province_data.json (static asset dari public/)
   useEffect(() => {
-    fetchMapData()
-      .then((rows) => {
-        const acc = {};
-        rows.forEach(({ provinsi, cluster_id }) => {
-          const key = normalise(provinsi);
-          if (!acc[key]) acc[key] = { 0: 0, 1: 0, 2: 0 };
-          acc[key][cluster_id] = (acc[key][cluster_id] || 0) + 1;
+    fetch("/province_data.json")
+      .then((r) => r.json())
+      .then((data) => {
+        setProvinceData(data);
+        // Build clusterMap untuk MapView
+        const cm = {};
+        Object.entries(data).forEach(([prov, val]) => {
+          cm[prov] = { dominant: val.dominant };
         });
-        const result = {};
-        Object.entries(acc).forEach(([prov, counts]) => {
-          const dominant = Number(
-            Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0]
-          );
-          result[prov] = { dominant, counts };
-        });
-        setClusterMap(result);
+        setClusterMap(cm);
       })
       .catch(console.error);
   }, []);
 
-  async function handleMapSelect(rawGeoName) {
-    const provinceName = resolveProvince(rawGeoName);
-
-    console.log("[MapClick] GeoJSON:", rawGeoName, "→ resolved:", provinceName);
-    console.log("[ClusterMap keys]", Object.keys(clusterMap));
-
-    try {
-      const results = await searchRegion(provinceName);
-      if (results && results.length > 0) {
-        setSelectedRegion(results[0]);
-      } else {
-        const shortName = provinceName.split(" ")[0];
-        const fallback  = await searchRegion(shortName);
-        setSelectedRegion(fallback?.[0] ?? provinceName);
-      }
-    } catch {
-      setSelectedRegion(provinceName);
-    }
+  // Klik provinsi di peta
+  function handleMapSelect(rawGeoName) {
+    const resolved = resolveProvince(rawGeoName);
+    console.log("[MapClick]", rawGeoName, "→", resolved, "| found:", !!provinceData[resolved]);
+    setSelectedRegion(resolved);
   }
 
-  function handleSearchSelect(kabName) {
-    setSelectedRegion(kabName);
+  // Pilih dari SearchBar → cari kab/kota di provinsi mana
+  async function handleSearchSelect(kabName) {
+    // Cari provinsi yang mengandung kab/kota ini
+    const kabLower = kabName.toLowerCase();
+    const found = Object.entries(provinceData).find(([, val]) =>
+      val.kab_kota.some(k => k.kab_kota.toLowerCase() === kabLower)
+    );
+    if (found) {
+      setSelectedRegion(found[0]);
+    } else {
+      // Fallback: langsung set dan biarkan RegionDetail handle
+      try {
+        const results = await searchRegion(kabName);
+        if (results?.length) setSelectedRegion(kabName);
+      } catch {}
+    }
   }
 
   return (
@@ -111,7 +105,8 @@ export default function Home() {
 
       <main className="flex flex-1 overflow-hidden">
         <RegionDetail
-          selectedRegion={selectedRegion}
+          selectedProvince={selectedRegion}
+          provinceData={provinceData[selectedRegion]}
           onClose={() => setSelectedRegion(null)}
         />
 
@@ -120,14 +115,12 @@ export default function Home() {
             geoData={geoData}
             clusterMap={clusterMap}
             onSelectRegion={handleMapSelect}
-            flyTo={null}
           />
           <div className="absolute top-4 right-4 z-[1000]">
             <Legend />
           </div>
         </div>
       </main>
-
     </div>
   );
 }
