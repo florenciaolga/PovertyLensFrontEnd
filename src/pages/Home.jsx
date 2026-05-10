@@ -6,9 +6,6 @@ import Legend from "../components/Legend";
 import SearchBar from "../components/SearchBar";
 import { searchRegion } from "../services/api";
 
-// ── GeoJSON name → CSV province name (uppercase) ──────────────────────────────
-// GeoJSON pakai uppercase BPS, CSV juga uppercase → mostly direct match
-// Special cases saja yang perlu alias
 const GEO_ALIAS = {
   "DI ACEH"                     : "ACEH",
   "IRIAN JAYA"                  : "PAPUA",
@@ -30,27 +27,21 @@ function resolveProvince(rawGeoName) {
   return GEO_ALIAS[up] || up;
 }
 
-// ── Home ──────────────────────────────────────────────────────────────────────
 export default function Home() {
   const [geoData,        setGeoData]        = useState(null);
-  // provinceData: { "ACEH": { dominant: 0, kab_kota: [{kab_kota, cluster}] }, ... }
   const [provinceData,   setProvinceData]   = useState({});
-  // clusterMap untuk MapView: { "ACEH": { dominant: 0 }, ... }
   const [clusterMap,     setClusterMap]     = useState({});
   const [selectedRegion, setSelectedRegion] = useState(null); // nama provinsi (uppercase CSV)
 
-  // Load GeoJSON provinsi — pakai gadm yang akurat & up-to-date
   useEffect(() => {
     fetch(
       "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson"
     ).catch(() => {});
 
-    // Pakai provinsi GeoJSON dari eppofahmi yang punya nama BPS uppercase
     fetch("https://raw.githubusercontent.com/eppofahmi/geojson-indonesia/master/provinsi/all_prov.geojson")
       .then((r) => r.json())
       .then(setGeoData)
       .catch(() => {
-        // Fallback: coba source lain
         fetch("https://raw.githubusercontent.com/ans-4175/peta-indonesia-geojson/master/indonesia-prov.geojson")
           .then(r => r.json())
           .then(setGeoData)
@@ -58,13 +49,11 @@ export default function Home() {
       });
   }, []);
 
-  // Load province_data.json (static asset dari public/)
   useEffect(() => {
     fetch("/province_data.json")
       .then((r) => r.json())
       .then((data) => {
         setProvinceData(data);
-        // Build clusterMap untuk MapView
         const cm = {};
         Object.entries(data).forEach(([prov, val]) => {
           cm[prov] = { dominant: val.dominant };
@@ -74,16 +63,13 @@ export default function Home() {
       .catch(console.error);
   }, []);
 
-  // Klik provinsi di peta
   function handleMapSelect(rawGeoName) {
     const resolved = resolveProvince(rawGeoName);
     console.log("[MapClick]", rawGeoName, "→", resolved, "| found:", !!provinceData[resolved]);
     setSelectedRegion(resolved);
   }
 
-  // Pilih dari SearchBar → cari kab/kota di provinsi mana
   async function handleSearchSelect(kabName) {
-    // Cari provinsi yang mengandung kab/kota ini
     const kabLower = kabName.toLowerCase();
     const found = Object.entries(provinceData).find(([, val]) =>
       val.kab_kota.some(k => k.kab_kota.toLowerCase() === kabLower)
@@ -91,7 +77,6 @@ export default function Home() {
     if (found) {
       setSelectedRegion(found[0]);
     } else {
-      // Fallback: langsung set dan biarkan RegionDetail handle
       try {
         const results = await searchRegion(kabName);
         if (results?.length) setSelectedRegion(kabName);

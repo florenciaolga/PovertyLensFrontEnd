@@ -16,7 +16,6 @@ const CLUSTER_COLOR = {
   2: "#B83232", // tinggi
 };
 
-// Coba berbagai property keys yang mungkin ada di GeoJSON
 function getProvinceName(properties) {
   return (
     properties?.PROVINSI  ||
@@ -32,7 +31,6 @@ function getProvinceName(properties) {
   );
 }
 
-// Alias map (uppercase → uppercase CSV)
 const GEO_ALIAS = {
   "DI ACEH"                    : "ACEH",
   "IRIAN JAYA"                 : "PAPUA",
