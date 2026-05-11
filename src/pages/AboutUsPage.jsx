@@ -5,6 +5,7 @@ import aboutus from "../assets/aboutus.png";
 import felicia from "../assets/felicia.jpeg";
 import olga from "../assets/olga.jpeg";
 import michelle from "../assets/michelle.jpeg";
+import jason from "../assets/jason.jpeg";
 
 function AboutUsPage() {
   return (
@@ -169,7 +170,7 @@ function AboutUsPage() {
               className="bg-[#E7E6C280] rounded-3xl overflow-hidden shadow-sm hover:scale-[1.02] transition"
             >
               <img
-                src={aboutus}
+                src={jason}
                 alt="Jason Timothy"
                 className="w-full h-[450px] object-cover"
               />
