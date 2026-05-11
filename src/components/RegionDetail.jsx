@@ -199,21 +199,18 @@ function KabDetail({ kabName, onBack }) {
                 value={`${data.kemiskinan?.toFixed(2)}%`}
               />
               <StatBadge
-                label="Skor IPM"
+                label="IPM"
                 value={fmtScore(data.ipm)}
               />
               <StatBadge
-                label="Skor Pengangguran"
+                label="Pengangguran"
                 value={fmtScore(data.pengangguran)}
               />
               <StatBadge
-                label="Skor TPAK"
+                label="TPAK"
                 value={fmtScore(data.tenaga_kerja.tpak)}
               />
             </div>
-            <p className="text-[10px] text-white/40 mt-2 leading-relaxed">
-              Skor: Nilai z-score relatif terhadap rata-rata nasional
-            </p>
             <p className="text-[10px] text-white/40 mt-2 leading-relaxed">
               IPM: Indeks Pembangunan Manusia
             </p>
