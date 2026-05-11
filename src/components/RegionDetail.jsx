@@ -252,10 +252,7 @@ function KabDetail({ kabName, onBack }) {
 }
 
 
-export default function RegionDetail({ selectedProvince, provinceData, onClose }) {
-  const [selectedKab, setSelectedKab] = useState(null);
-
-  useEffect(() => { setSelectedKab(null); }, [selectedProvince]);
+export default function RegionDetail({ selectedProvince, provinceData, onClose, selectedKab, setSelectedKab}) {
 
   if (!selectedProvince) {
     return (

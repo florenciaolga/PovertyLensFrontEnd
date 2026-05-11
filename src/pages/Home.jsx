@@ -19,10 +19,11 @@ function resolveProvince(rawGeoName) {
 }
 
 export default function Home() {
-  const [geoData,        setGeoData]        = useState(null);
-  const [provinceData,   setProvinceData]   = useState({});
-  const [clusterMap,     setClusterMap]     = useState({});
-  const [selectedRegion, setSelectedRegion] = useState(null); // nama provinsi (uppercase CSV)
+  const [geoData,setGeoData] = useState(null);
+  const [provinceData,setProvinceData]= useState({});
+  const [clusterMap, setClusterMap] = useState({});
+  const [selectedRegion,setSelectedRegion] = useState(null); // nama provinsi (uppercase CSV)
+  const[selectedKab, setSelectedKab] = useState(null)
 
   useEffect(() => {
     fetch(
@@ -67,6 +68,7 @@ export default function Home() {
     );
     if (found) {
       setSelectedRegion(found[0]);
+      setSelectedKab(kabName)
     } else {
       try {
         const results = await searchRegion(kabName);
@@ -83,7 +85,11 @@ export default function Home() {
         <RegionDetail
           selectedProvince={selectedRegion}
           provinceData={provinceData[selectedRegion]}
-          onClose={() => setSelectedRegion(null)}
+          selectedKab = {selectedKab}
+          setSelectedKab = {setSelectedKab}
+          onClose={() => {
+            setSelectedRegion(null);
+            setSelectedKab(null)}}
         />
 
         <div className="relative flex-1">
