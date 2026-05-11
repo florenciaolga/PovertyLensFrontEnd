@@ -7,19 +7,10 @@ import SearchBar from "../components/SearchBar";
 import { searchRegion } from "../services/api";
 
 const GEO_ALIAS = {
-  "DI ACEH"                     : "ACEH",
-  "IRIAN JAYA"                  : "PAPUA",
-  "IRIAN JAYA BARAT"            : "PAPUA BARAT",
-  "IRIAN JAYA TIMUR"            : "PAPUA",
-  "IRIAN JAYA TENGAH"           : "PAPUA",
-  "DAERAH ISTIMEWA YOGYAKARTA"  : "D I YOGYAKARTA",
-  "DI YOGYAKARTA"               : "D I YOGYAKARTA",
-  "YOGYAKARTA"                  : "D I YOGYAKARTA",
-  "JAKARTA"                     : "DKI JAKARTA",
-  "JAKARTA RAYA"                : "DKI JAKARTA",
-  "BANGKA BELITUNG"             : "KEP. BANGKA BELITUNG",
-  "KEPULAUAN BANGKA BELITUNG"   : "KEP. BANGKA BELITUNG",
-  "PROBANTEN"                   : "BANTEN",
+  "DI. ACEH" :"ACEH",
+  "DAERAH ISTIMEWA YOGYAKARTA":"D I YOGYAKARTA",
+  "BANGKA BELITUNG":"KEP. BANGKA BELITUNG",
+  "NUSATENGGARA BARAT": "NUSA TENGGARA BARAT"
 };
 
 function resolveProvince(rawGeoName) {
