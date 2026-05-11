@@ -39,7 +39,7 @@ export default function HowToUsePage() {
             </h3>
 
             <p className="mb-10 flex h-[60px] items-center justify-center font-[Poppins] text-[1.3rem] text-[#5b341f]">
-              Klik View Detail
+              Klik Kabupaten/Kota
             </p>
 
             <HiOutlineDocumentSearch className="mx-auto text-[3.3rem] text-[#5b341f] transition hover:animate-bounce hover:text-[#173c5c]" />
