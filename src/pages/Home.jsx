@@ -27,19 +27,10 @@ export default function Home() {
   const[mapCenter, setMapCenter] = useState(null)
 
   useEffect(() => {
-    fetch(
-      "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson"
-    ).catch(() => {});
-
-    fetch("https://raw.githubusercontent.com/eppofahmi/geojson-indonesia/master/provinsi/all_prov.geojson")
-      .then((r) => r.json())
-      .then(setGeoData)
-      .catch(() => {
-        fetch("https://raw.githubusercontent.com/ans-4175/peta-indonesia-geojson/master/indonesia-prov.geojson")
+    fetch("https://raw.githubusercontent.com/ans-4175/peta-indonesia-geojson/master/indonesia-prov.geojson")
           .then(r => r.json())
           .then(setGeoData)
           .catch(console.error);
-      });
   }, []);
 
   useEffect(() => {
