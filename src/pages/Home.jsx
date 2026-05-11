@@ -23,7 +23,8 @@ export default function Home() {
   const [provinceData,setProvinceData]= useState({});
   const [clusterMap, setClusterMap] = useState({});
   const [selectedRegion,setSelectedRegion] = useState(null); // nama provinsi (uppercase CSV)
-  const[selectedKab, setSelectedKab] = useState(null)
+  const[selectedKab, setSelectedKab] = useState(null);
+  const[mapCenter, setMapCenter] = useState(null)
 
   useEffect(() => {
     fetch(
@@ -57,7 +58,7 @@ export default function Home() {
 
   function handleMapSelect(rawGeoName) {
     const resolved = resolveProvince(rawGeoName);
-    console.log("[MapClick]", rawGeoName, "→", resolved, "| found:", !!provinceData[resolved]);
+    setSelectedKab(null);
     setSelectedRegion(resolved);
   }
 
@@ -97,6 +98,8 @@ export default function Home() {
             geoData={geoData}
             clusterMap={clusterMap}
             onSelectRegion={handleMapSelect}
+            selectedRegion= {selectedRegion}
+            flyTo={mapCenter}
           />
           <div className="absolute top-4 right-4 z-[1000]">
             <Legend />
